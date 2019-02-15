@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.Range;
 public class RobotDrive {
 
     /** The location of a motor on the robot for the purpose of driving. */
-    enum MotorType {
+    public enum MotorType {
         /** Front left */
         LOCATION_FRONT_LEFT,
         /** Front right */
@@ -298,11 +298,13 @@ public class RobotDrive {
 
         if(_frontLeftMotor != null)
             _frontLeftMotor.setPower(leftOutput);
-        _rearLeftMotor.setPower(leftOutput);
+        if(_rearLeftMotor != null)
+            _rearLeftMotor.setPower(leftOutput);
 
         if(_frontRightMotor != null)
             _frontRightMotor.setPower(-rightOutput);
-        _rearRightMotor.setPower(-rightOutput);
+        if(_rearRightMotor != null)
+            _rearRightMotor.setPower(-rightOutput);
     }
 
     /**
@@ -314,18 +316,26 @@ public class RobotDrive {
      *
      * @param motor: The motor type location to invert.
      * @param isInverted: true if the motor should be inverted when operated.
+     * @return true if successful
      */
-    public void setMotorInverted(MotorType motor, boolean isInverted) {
+    public boolean setMotorInverted(MotorType motor, boolean isInverted) {
         final DcMotor.Direction direction =
                 isInverted ? DcMotor.Direction.REVERSE : DcMotor.Direction.FORWARD;
-        if(motor == MotorType.LOCATION_FRONT_LEFT)
+        boolean success = false;
+        if((motor == MotorType.LOCATION_FRONT_LEFT) && (_frontLeftMotor != null)) {
             _frontLeftMotor.setDirection(direction);
-        else if(motor == MotorType.LOCATION_FRONT_RIGHT)
+            success = true;
+        } else if((motor == MotorType.LOCATION_FRONT_RIGHT) && (_frontRightMotor != null)) {
             _frontRightMotor.setDirection(direction);
-        else if(motor == MotorType.LOCATION_REAR_LEFT)
+            success = true;
+        } else if((motor == MotorType.LOCATION_REAR_LEFT) && (_rearLeftMotor != null)) {
             _rearLeftMotor.setDirection(direction);
-        else if(motor == MotorType.LOCATION_REAR_RIGHT)
+            success = true;
+        } else if((motor == MotorType.LOCATION_REAR_RIGHT) && (_rearRightMotor != null)) {
             _rearRightMotor.setDirection(direction);
+            success = true;
+        }
+        return success;
     }
 
     /**

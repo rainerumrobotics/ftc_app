@@ -71,13 +71,22 @@ public class TeleOpMode extends OpMode {
      *
      * Finally activate the configuration by selecting its name on the list and press Activate.
      *
-     * SquareBot hardware configuration:
+     * Bot hardware configuration for REV Robotics Expansion Hub:
      *  - Motor Controller:
-     *    Port 1 - Left DC motor "left_drive"
-     *    Port 2 - Right DC motor "right_drive"
+     *    Port 1 - Left DC motor, "left_drive", REV Robotics Core Hex Motor
+     *    Port 2 - Right DC motor, "right_drive", REV Robotics Core Hex Motor
      *  - Device Interface Module (not used in this code):
      *    Analog Port 0 - Optical distance sensor
      *    Digital Port 0 - Touch sensor
+     *
+     * Bot hardware sketch:
+     *  ===        ===
+     * .-+----------+-.
+     * |        [M_FL]|
+     * |     -->      |
+     * |        [M_FR]|
+     * `-+----------+-´
+     *  ===        ===
      */
 
     // Declare OpMode members.
@@ -98,7 +107,11 @@ public class TeleOpMode extends OpMode {
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        robotDrive = new RobotDrive(leftDrive, rightDrive);
+        // Use front drive wheels for driving.
+        robotDrive = new RobotDrive(leftDrive, null, rightDrive, null);
+        // Reverse motor directions since direct drive is used.
+        robotDrive.setMotorInverted(RobotDrive.MotorType.LOCATION_FRONT_LEFT, true);
+        robotDrive.setMotorInverted(RobotDrive.MotorType.LOCATION_FRONT_RIGHT, true);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
