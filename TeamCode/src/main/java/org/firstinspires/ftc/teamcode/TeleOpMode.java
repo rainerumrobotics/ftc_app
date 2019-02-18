@@ -52,7 +52,7 @@ import org.firstinspires.ftc.teamcode.hardware.RobotDrive;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOpMode", group="OpModes")
+@TeleOp(name="TeleOpMode", group="TeleOpModes")
 //@Disabled
 public class TeleOpMode extends OpMode {
     /*
@@ -149,7 +149,7 @@ public class TeleOpMode extends OpMode {
         //robotDrive.tankDrive(gamepad1);
 
         // Get calculated power from motor drivers
-        DcMotor leftDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_REAR_LEFT);
+        DcMotor leftDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_FRONT_LEFT);
         DcMotor rightDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_FRONT_RIGHT);
 
         // Setup a variable for each drive wheel to save power level for telemetry
