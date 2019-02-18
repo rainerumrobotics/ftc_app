@@ -91,8 +91,6 @@ public class TeleOpMode extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive;
-    private DcMotor rightDrive;
     private RobotDrive robotDrive;
 
     /*
@@ -105,16 +103,18 @@ public class TeleOpMode extends OpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        // Use front drive wheels for driving.
-        robotDrive = new RobotDrive(leftDrive, null, rightDrive, null);
-        // Reverse motor directions since direct drive is used.
-        robotDrive.setMotorInverted(RobotDrive.MotorType.LOCATION_FRONT_LEFT, true);
-        robotDrive.setMotorInverted(RobotDrive.MotorType.LOCATION_FRONT_RIGHT, true);
+        DcMotor leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        DcMotor rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        // Use front wheel direct drive with encoders for constant speed driving.
+        robotDrive = new RobotDrive(
+                leftDrive, rightDrive,
+                RobotDrive.DirectDrive.FONT_WHEEL_DRIVE,
+                RobotDrive.EncoderMode.RUN_USING_ENCODERS
+        );
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
+
     }
 
     /*
@@ -137,10 +137,6 @@ public class TeleOpMode extends OpMode {
      */
     @Override
     public void loop() {
-        // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower;
-        double rightPower;
-
         // Choose to drive using either Tank Mode, or Arcade Mode
         // Comment out the method that's not used.  The default below is Arcade.
 
@@ -153,12 +149,21 @@ public class TeleOpMode extends OpMode {
         //robotDrive.tankDrive(gamepad1);
 
         // Get calculated power from motor drivers
-        leftPower = leftDrive.getPower();
-        rightPower = rightDrive.getPower();
+        DcMotor leftDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_REAR_LEFT);
+        DcMotor rightDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_FRONT_RIGHT);
+
+        // Setup a variable for each drive wheel to save power level for telemetry
+        double leftPower = leftDrive.getPower();
+        double rightPower = rightDrive.getPower();
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+
+        // Show current encoder values.
+        int leftEnc = leftDrive.getCurrentPosition();
+        int rightEnc = rightDrive.getCurrentPosition();
+        telemetry.addData("Encoders", "left (%d), right (%d)", leftEnc, rightEnc);
     }
 
     /*

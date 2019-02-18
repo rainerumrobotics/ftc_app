@@ -16,23 +16,47 @@ public class RobotDrive {
 
     /** The location of a motor on the robot for the purpose of driving. */
     public enum MotorType {
-        /** Front left */
+        /** Front left. */
         LOCATION_FRONT_LEFT,
-        /** Front right */
+        /** Front right. */
         LOCATION_FRONT_RIGHT,
-        /** Rear left */
+        /** Rear left. */
         LOCATION_REAR_LEFT,
-        /** Rear right */
+        /** Rear right. */
         LOCATION_REAR_RIGHT
+    }
+
+    /** The mode of operation of the encoder for the motors. */
+    public enum EncoderMode {
+        /** Without encoders or encoders not connected applying only given PWM power value. */
+        RUN_WITHOUT_ENCODERS,
+        /** With encoders applying constant given speed instead of power with PID. */
+        RUN_USING_ENCODERS,
+        /** With encoders with PID until target position is reached. */
+        RUN_TO_POSITION
+    }
+
+    /** The selection of motors with direct drive instead of geared drive train. */
+    public enum DirectDrive {
+        /** FWD direct drive transmission. */
+        FONT_WHEEL_DRIVE,
+        /** RWD direct drive transmission. */
+        REAR_WHEEL_DRIVE
     }
 
     public static final float K_DEFAULT_SENSITIVITY = 0.5f;
     public static final float K_DEFAULT_MAX_OUTPUT = 1.0f;
 
+    public static final int K_TICKS_PER_REVOLUTION_REV_CORE_HEX_MOTOR = 288;
+    public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_40 = 2240;
+    public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_20 = 1120;
+
+
     private final DcMotor _frontLeftMotor;
     private final DcMotor _rearLeftMotor;
     private final DcMotor _frontRightMotor;
     private final DcMotor _rearRightMotor;
+    private final EncoderMode _baseEncoderMode;
 
     private float _maxOutput;
     private float _sensitivity;
@@ -61,6 +85,24 @@ public class RobotDrive {
      */
     public RobotDrive(DcMotor frontLeftMotor, DcMotor rearLeftMotor,
                       DcMotor frontRightMotor, DcMotor rearRightMotor) {
+        this(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor,
+                EncoderMode.RUN_WITHOUT_ENCODERS);
+    }
+
+    /**
+     * Constructor for RobotDrive.
+     *
+     * Four motors can be passed to this constructor to implement a four wheel drive system,
+     * respectively. Furthermore encoders can be enabled for constant speed PID driving.
+     * @param frontLeftMotor
+     * @param rearLeftMotor
+     * @param frontRightMotor
+     * @param rearRightMotor
+     * @param encoderMode
+     */
+    public RobotDrive(DcMotor frontLeftMotor, DcMotor rearLeftMotor,
+                      DcMotor frontRightMotor, DcMotor rearRightMotor,
+                      EncoderMode encoderMode) {
         // Defaults:
         _frontLeftMotor = frontLeftMotor;
         _rearLeftMotor = rearLeftMotor;
@@ -68,8 +110,48 @@ public class RobotDrive {
         _rearRightMotor = rearRightMotor;
         _maxOutput = RobotDrive.K_DEFAULT_MAX_OUTPUT;
         _sensitivity = RobotDrive.K_DEFAULT_SENSITIVITY;
+        _baseEncoderMode = encoderMode;
         // Start off not moving.
         drive(0, 0);
+        resetInitialEncoderMode();
+    }
+
+    /**
+     * Constructor for RobotDrive.
+     *
+     * Two motors can be passed to this constructor to implement a two wheel drive system,
+     * respectively front wheel drive or rear wheel drive.
+     * @param leftMotor
+     * @param rightMotor
+     * @param driveMode
+     */
+    public RobotDrive(DcMotor leftMotor, DcMotor rightMotor, DirectDrive driveMode) {
+        this(leftMotor, rightMotor, driveMode, EncoderMode.RUN_WITHOUT_ENCODERS);
+    }
+
+    /**
+     * Constructor for RobotDrive.
+     *
+     * Two motors can be passed to this constructor to implement a two wheel drive system,
+     * respectively FWD or RWD. Furthermore encoders can be enabled for constant speed PID driving.
+     * @param leftMotor
+     * @param rightMotor
+     * @param driveMode
+     * @param encoderMode
+     */
+    public RobotDrive(
+            DcMotor leftMotor, DcMotor rightMotor, DirectDrive driveMode, EncoderMode encoderMode) {
+        this(
+                (driveMode == DirectDrive.FONT_WHEEL_DRIVE) ? leftMotor : null,
+                (driveMode == DirectDrive.REAR_WHEEL_DRIVE) ? leftMotor : null,
+                (driveMode == DirectDrive.FONT_WHEEL_DRIVE) ? rightMotor : null,
+                (driveMode == DirectDrive.REAR_WHEEL_DRIVE) ? rightMotor : null,
+                encoderMode
+        );
+        if(driveMode == DirectDrive.FONT_WHEEL_DRIVE) {
+            setMotorInverted(MotorType.LOCATION_FRONT_LEFT, true);
+            setMotorInverted(MotorType.LOCATION_FRONT_RIGHT, true);
+        }
     }
 
     /**
@@ -369,6 +451,58 @@ public class RobotDrive {
             _rearRightMotor.setPower(0.0);
     }
 
+    public void setEncoderMode(EncoderMode encoderMode) {
+        DcMotor.RunMode runMode = DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+        if(encoderMode == EncoderMode.RUN_USING_ENCODERS)
+            runMode = DcMotor.RunMode.RUN_USING_ENCODER;
+        if(encoderMode == EncoderMode.RUN_TO_POSITION)
+            runMode = DcMotor.RunMode.RUN_TO_POSITION;
+        if(_frontLeftMotor != null) {
+            _frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            _frontLeftMotor.setMode(runMode);
+        }
+        if(_frontRightMotor != null) {
+            _frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            _frontRightMotor.setMode(runMode);
+        }
+        if(_rearLeftMotor != null) {
+            _rearLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            _rearLeftMotor.setMode(runMode);
+        }
+        if(_rearRightMotor != null) {
+            _rearRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            _rearRightMotor.setMode(runMode);
+        }
+    }
+
+    public void resetInitialEncoderMode() {
+        setEncoderMode(_baseEncoderMode);
+    }
+
+    public void setEncoderTargetPositionTicks(MotorType motorLocation, int positionTicks) {
+        final DcMotor motor = getDcMotor(motorLocation);
+        if(motor != null) {
+            motor.setTargetPosition(positionTicks);
+        }
+    }
+
+    public void driveStraightToPositionTicks(int positionTicks) {
+        resetInitialEncoderMode();
+        setEncoderTargetPositionTicks(MotorType.LOCATION_FRONT_LEFT, positionTicks);
+        setEncoderTargetPositionTicks(MotorType.LOCATION_REAR_LEFT, positionTicks);
+        setEncoderTargetPositionTicks(MotorType.LOCATION_FRONT_RIGHT, positionTicks);
+        setEncoderTargetPositionTicks(MotorType.LOCATION_REAR_RIGHT, positionTicks);
+        setEncoderMode(EncoderMode.RUN_TO_POSITION);
+        setLeftRightMotorOutputs(1.0f, 1.0f);
+        DcMotor motor = getDcMotor(MotorType.LOCATION_REAR_LEFT);
+        DcMotor leftMotor = (motor != null) ? motor : getDcMotor(MotorType.LOCATION_FRONT_LEFT);
+        motor = getDcMotor(MotorType.LOCATION_REAR_RIGHT);
+        DcMotor rightMotor = (motor != null) ? motor : getDcMotor(MotorType.LOCATION_FRONT_RIGHT);
+        while(leftMotor.isBusy() && rightMotor.isBusy()); // Wait until finished.
+        setLeftRightMotorOutputs(0.0f, 0.0f);
+        resetInitialEncoderMode();
+    }
+
     public int getNumMotors() {
         int motors = 0;
         if(_frontLeftMotor != null)
@@ -380,5 +514,17 @@ public class RobotDrive {
         if(_rearRightMotor != null)
             motors += 1;
         return motors;
+    }
+
+    public DcMotor getDcMotor(MotorType motorLocation) {
+        if(motorLocation == MotorType.LOCATION_FRONT_LEFT) {
+            return _frontLeftMotor;
+        } else if(motorLocation == MotorType.LOCATION_REAR_LEFT) {
+            return _rearLeftMotor;
+        } else if(motorLocation == MotorType.LOCATION_FRONT_RIGHT) {
+            return _frontLeftMotor;
+        } else {
+            return _rearRightMotor;
+        }
     }
 }
