@@ -16,6 +16,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    buildTypes.each {
+        // TODO: Place your Vuforia developer key in ~/.gradle/gradle.properties file
+        // For example: VuforiaApiKey = "YOURKEY"
+        // See also: https://developer.vuforia.com/license-manager
+        it.buildConfigField 'String', 'VUFORIA_API_KEY', VuforiaApiKey
+    }
 }
 
 repositories {
