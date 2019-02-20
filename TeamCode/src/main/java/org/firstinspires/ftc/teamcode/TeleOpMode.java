@@ -33,10 +33,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
 import org.firstinspires.ftc.teamcode.hardware.RobotDrive;
+import org.firstinspires.ftc.teamcode.hardware.VerticalLift;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -92,6 +94,7 @@ public class TeleOpMode extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private RobotDrive robotDrive;
+    private VerticalLift lift;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -105,12 +108,15 @@ public class TeleOpMode extends OpMode {
         // step (using the FTC Robot Controller app on the phone).
         DcMotor leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         DcMotor rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        DcMotor winchDrive = hardwareMap.get(DcMotor.class,"winch_drive");
+        TouchSensor winchEndStop = hardwareMap.get(TouchSensor.class, "winch_end_stop");
         // Use front wheel direct drive with encoders for constant speed driving.
         robotDrive = new RobotDrive(
                 leftDrive, rightDrive,
                 RobotDrive.DirectDrive.FONT_WHEEL_DRIVE,
                 RobotDrive.EncoderMode.RUN_USING_ENCODERS
         );
+        lift = new VerticalLift(winchDrive, winchEndStop);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -155,6 +161,14 @@ public class TeleOpMode extends OpMode {
         // Setup a variable for each drive wheel to save power level for telemetry
         double leftPower = leftDrive.getPower();
         double rightPower = rightDrive.getPower();
+
+        if(gamepad1.right_trigger > 0.5) {
+            lift.moveDown();
+        } else if(gamepad1.right_bumper) {
+            lift.moveUp();
+        } else {
+            lift.stop();
+        }
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
