@@ -25,6 +25,7 @@ public class DegreeRotationOpMode extends OpMode {
     private float targetHeading;
     private boolean isRotating;
 
+
     @Override
     public void init() {
         // send message to telemetry
