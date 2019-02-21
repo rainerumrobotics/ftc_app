@@ -8,7 +8,7 @@ public class VerticalLift {
     public static final float K_MAX_POWER = 1.0f;
     public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_40 = 2240;
     public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_20 = 1120;
-    public static final int K_SW_MAX_END_STOP_TICKS = 200;
+    public static final int K_SW_MAX_END_STOP_TICKS = 9954;
     public static final int K_HOMING_BUMP_TICKS = 100;
 
     private final DcMotor _liftMotor;
@@ -51,7 +51,6 @@ public class VerticalLift {
 
     public void moveToMin() {
         while(!moveDown());
-        _liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public boolean isLiftHomed() {
@@ -70,17 +69,27 @@ public class VerticalLift {
 
     private void moveToPositionTicks(int ticks) {
         _liftMotor.setTargetPosition(ticks);
+        _liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         _liftMotor.setPower(K_MAX_POWER);
         while(_liftMotor.isBusy());
         stop();
         _liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * Please call this method in the OpMode loop.
+     * @return
+     */
     public boolean isBottomEndStopHit() {
         //_liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //_liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        _isHomed = true;
-        return _bottomEndStop.isPressed();
+        final boolean isPressed = _bottomEndStop.isPressed();
+        if(isPressed) {
+            _isHomed = true;
+            _liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            _liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        return isPressed;
     }
 
     public void testAssembly() {

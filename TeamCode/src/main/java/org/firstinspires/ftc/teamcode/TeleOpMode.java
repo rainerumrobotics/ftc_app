@@ -69,5 +69,9 @@ public class TeleOpMode extends BaseOpMode {
         } else {
             lift.stop();
         }
+
+        if(gamepad1.a) {
+            //lift.testAssembly();
+        }
     }
 }
