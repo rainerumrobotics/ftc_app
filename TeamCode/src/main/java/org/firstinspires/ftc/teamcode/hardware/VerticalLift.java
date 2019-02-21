@@ -19,16 +19,13 @@ public class VerticalLift {
         _liftMotor = liftMotor;
         _bottomEndStop = bottomEndStop;
         _liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void moveUp() {
         //_liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //_liftMotor.setTargetPosition(1000);
         _liftMotor.setPower(K_MAX_POWER);
-    }
-
-    public void moveDOwn() {
-        _liftMotor.setPower(-K_MAX_POWER);
     }
 
     public void moveToMax() {
@@ -93,5 +90,9 @@ public class VerticalLift {
         doHoming();
         moveToMax();
         moveToMin();
+    }
+
+    public int testGetEncoderTicks() {
+        return _liftMotor.getCurrentPosition();
     }
 }
