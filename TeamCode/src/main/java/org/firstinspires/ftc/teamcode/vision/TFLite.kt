@@ -18,9 +18,10 @@ class TFLite(private val master: MasterVision) {
     private val parameters = TFObjectDetector.Parameters(tfodMoniterViewId)
 
     var lastGoldPositionX: Int? = null
-    //val positionXMin: Int? = 0
-    //val positionXMid: Int? = Int.MIN_VALUE;
-    //var positionXMax: Int? = null
+    val positionX_Center: Int = Int.MAX_VALUE;
+    val positionX_Left: Int = positionX_Center - 1;
+    val positionX_Right: Int = positionX_Left - 1;
+    var positionX_Max: Int? = null
 
     fun init() {
         if (tfod == null) {
@@ -36,7 +37,7 @@ class TFLite(private val master: MasterVision) {
             val updatedRecognitions = tfod?.updatedRecognitions
             if (updatedRecognitions != null) {
                 if (updatedRecognitions.size == 3 || updatedRecognitions.size == 2) {
-                    //positionXMax = updatedRecognitions[0].imageWidth;
+                    positionX_Max = updatedRecognitions[0].imageWidth;
                     var goldMineralX: Int? = null
                     var silverMineral1X: Int? = null
                     var silverMineral2X: Int? = null
@@ -62,7 +63,7 @@ class TFLite(private val master: MasterVision) {
                                             SampleRandomizedPositions.RIGHT
                                         }
                                         else {
-                                            lastGoldPositionX = 0
+                                            lastGoldPositionX = positionX_Center
                                             SampleRandomizedPositions.CENTER
                                         }
 
@@ -71,7 +72,7 @@ class TFLite(private val master: MasterVision) {
                         MasterVision.TFLiteAlgorithm.INFER_LEFT  -> {
                             if(updatedRecognitions.size == 2) {
                                 if (goldMineralX == null) {
-                                    lastGoldPositionX = 0
+                                    lastGoldPositionX = positionX_Left
                                     lastKnownSampleOrder = SampleRandomizedPositions.LEFT
                                 }
                                 else if (silverMineral1X != null) {
@@ -88,7 +89,7 @@ class TFLite(private val master: MasterVision) {
                         MasterVision.TFLiteAlgorithm.INFER_RIGHT -> {
                             if(updatedRecognitions.size == 2) {
                                 if (goldMineralX == null) {
-                                    lastGoldPositionX = 0
+                                    lastGoldPositionX = positionX_Right
                                     lastKnownSampleOrder = SampleRandomizedPositions.RIGHT
                                 }
                                 else if (silverMineral1X != null) {
