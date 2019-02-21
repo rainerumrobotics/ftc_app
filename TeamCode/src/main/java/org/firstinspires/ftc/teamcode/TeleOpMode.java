@@ -109,6 +109,7 @@ public class TeleOpMode extends OpMode {
         DcMotor leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         DcMotor rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         DcMotor winchDrive = hardwareMap.get(DcMotor.class,"winch_drive");
+        // REV Touch Sensor on Digital Port 1
         TouchSensor winchEndStop = hardwareMap.get(TouchSensor.class, "winch_end_stop");
         // Use front wheel direct drive with encoders for constant speed driving.
         robotDrive = new RobotDrive(
@@ -173,7 +174,7 @@ public class TeleOpMode extends OpMode {
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-        telemetry.addData("Lift", "ticks (%d)", lift.testGetEncoderTicks());
+        telemetry.addData("Lift", "ticks (%d) endStop=" + lift.isBottomEndStopHit(), lift.testGetEncoderTicks());
 
         // Show current encoder values.
         int leftEnc = leftDrive.getCurrentPosition();
