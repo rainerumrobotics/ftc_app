@@ -33,12 +33,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
-import org.firstinspires.ftc.teamcode.hardware.RobotDrive;
 import org.firstinspires.ftc.teamcode.hardware.VerticalLift;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -54,9 +54,9 @@ import org.firstinspires.ftc.teamcode.hardware.VerticalLift;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOpMode", group="TeleOpModes")
+@TeleOp(name="TeleOpProva", group="TeleOpModes")
 //@Disabled
-public class TeleOpMode extends OpMode {
+public class TeleOpProva extends OpMode {
     /*
      * TODO: Enable OpMode and configure your robot setup in the RC-App.
      *
@@ -93,8 +93,7 @@ public class TeleOpMode extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private RobotDrive robotDrive;
-    private VerticalLift lift;
+    private VerticalLift verticalLift;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -106,17 +105,10 @@ public class TeleOpMode extends OpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        DcMotor leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        DcMotor rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        DcMotor winchDrive = hardwareMap.get(DcMotor.class,"winch_drive");
-        TouchSensor winchEndStop = hardwareMap.get(TouchSensor.class, "winch_end_stop");
+        DcMotor liftMotor = hardwareMap.get(DcMotor.class, "vertical_lift");
+        TouchSensor touchSensor = hardwareMap.get(TouchSensor.class, "lift_end_stop");
         // Use front wheel direct drive with encoders for constant speed driving.
-        robotDrive = new RobotDrive(
-                leftDrive, rightDrive,
-                RobotDrive.DirectDrive.FONT_WHEEL_DRIVE,
-                RobotDrive.EncoderMode.RUN_USING_ENCODERS
-        );
-        lift = new VerticalLift(winchDrive, winchEndStop);
+        verticalLift = new VerticalLift(liftMotor, touchSensor);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -148,36 +140,12 @@ public class TeleOpMode extends OpMode {
 
         // Arcade Mode uses one stick to go forward/backward, and left/right to turn.
         GamepadStick stick = new GamepadStick(gamepad1, GamepadStick.Section.SIDE_RIGHT);
-        robotDrive.arcadeDrive(stick);
 
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
         //robotDrive.tankDrive(gamepad1);
 
         // Get calculated power from motor drivers
-        DcMotor leftDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_FRONT_LEFT);
-        DcMotor rightDrive = robotDrive.getDcMotor(RobotDrive.MotorType.LOCATION_FRONT_RIGHT);
-
-        // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower = leftDrive.getPower();
-        double rightPower = rightDrive.getPower();
-
-        if(gamepad1.right_trigger > 0.5) {
-            lift.moveDown();
-        } else if(gamepad1.right_bumper) {
-            lift.moveUp();
-        } else {
-            lift.stop();
-        }
-
-        // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-
-        // Show current encoder values.
-        int leftEnc = leftDrive.getCurrentPosition();
-        int rightEnc = rightDrive.getCurrentPosition();
-        telemetry.addData("Encoders", "left (%d), right (%d)", leftEnc, rightEnc);
     }
 
     /*
