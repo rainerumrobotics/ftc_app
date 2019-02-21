@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -7,6 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.vision.MasterVision;
 import org.firstinspires.ftc.teamcode.vision.SampleRandomizedPositions;
+import org.firstinspires.ftc.teamcode.vision.TFLite;
+
+import java.util.Objects;
 
 import static com.qualcomm.ftcrobotcontroller.BuildConfig.VUFORIA_API_KEY;
 
@@ -49,10 +54,28 @@ public class TestVuforiaOpMode extends LinearOpMode{
                     telemetry.addLine("staying put");
                     break;
             }
+            //telemetry.addLine("positionX = " + getGoldPosition());
+            }
 
             telemetry.update();
         }
 
         vision.shutdown();
     }
+
+    /*@SuppressWarnings("ConstantConditions")
+    private int getGoldPosition() {
+        final int INVALID_POSITION = Integer.MIN_VALUE;
+        TFLite tfLite = vision.getTfLite();
+        Integer posX = tfLite.getLastGoldPositionX();
+        final Integer MAX = tfLite.getPositionXMax();
+        final Integer MID = MAX / 2;
+        if(posX != null) {
+            return INVALID_POSITION;
+        }
+        if(Objects.equals(posX, tfLite.getPositionXMid())) {
+            return 0;
+        }
+        return tfLite.getLastGoldPositionX() - MID;
+    }*/
 }

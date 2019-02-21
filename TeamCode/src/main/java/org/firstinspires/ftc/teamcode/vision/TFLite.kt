@@ -17,6 +17,11 @@ class TFLite(private val master: MasterVision) {
     private val tfodMoniterViewId = master.hMap.appContext.resources.getIdentifier("tfodMonitorViewId", "id", master.hMap.appContext.packageName)
     private val parameters = TFObjectDetector.Parameters(tfodMoniterViewId)
 
+    var lastGoldPositionX: Int? = null
+    //val positionXMin: Int? = 0
+    //val positionXMid: Int? = Int.MIN_VALUE;
+    //var positionXMax: Int? = null
+
     fun init() {
         if (tfod == null) {
             tfod = ClassFactory.getInstance().createTFObjectDetector(parameters, master.vuforiaLocalizer)
@@ -31,6 +36,7 @@ class TFLite(private val master: MasterVision) {
             val updatedRecognitions = tfod?.updatedRecognitions
             if (updatedRecognitions != null) {
                 if (updatedRecognitions.size == 3 || updatedRecognitions.size == 2) {
+                    //positionXMax = updatedRecognitions[0].imageWidth;
                     var goldMineralX: Int? = null
                     var silverMineral1X: Int? = null
                     var silverMineral2X: Int? = null
@@ -44,37 +50,57 @@ class TFLite(private val master: MasterVision) {
                             silverMineral2X = recognition.left.toInt()
                     }
                     when (master.tfLiteAlgorithm) {
-                        MasterVision.TFLiteAlgorithm.INFER_NONE  -> if (goldMineralX != null && silverMineral1X != null && silverMineral2X != null)
-                            if (updatedRecognitions.size == 3)
+                        MasterVision.TFLiteAlgorithm.INFER_NONE  -> if (goldMineralX != null && silverMineral1X != null && silverMineral2X != null) {
+                            if (updatedRecognitions.size == 3) {
                                 lastKnownSampleOrder =
-                                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X)
+                                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                            lastGoldPositionX = goldMineralX
                                             SampleRandomizedPositions.LEFT
-                                        else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X)
+                                        }
+                                        else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                            lastGoldPositionX = goldMineralX
                                             SampleRandomizedPositions.RIGHT
-                                        else
+                                        }
+                                        else {
+                                            lastGoldPositionX = 0
                                             SampleRandomizedPositions.CENTER
+                                        }
+
+                            }
+                        }
                         MasterVision.TFLiteAlgorithm.INFER_LEFT  -> {
                             if(updatedRecognitions.size == 2) {
-                                if (goldMineralX == null)
+                                if (goldMineralX == null) {
+                                    lastGoldPositionX = 0
                                     lastKnownSampleOrder = SampleRandomizedPositions.LEFT
-                                else if (silverMineral1X != null)
+                                }
+                                else if (silverMineral1X != null) {
                                     lastKnownSampleOrder =
-                                            if (goldMineralX < silverMineral1X)
+                                            if (goldMineralX < silverMineral1X) {
                                                 SampleRandomizedPositions.CENTER
-                                            else
+                                            } else {
                                                 SampleRandomizedPositions.RIGHT
+                                            }
+                                    lastGoldPositionX = goldMineralX
+                                }
                             }
                         }
                         MasterVision.TFLiteAlgorithm.INFER_RIGHT -> {
                             if(updatedRecognitions.size == 2) {
-                                if (goldMineralX == null)
+                                if (goldMineralX == null) {
+                                    lastGoldPositionX = 0
                                     lastKnownSampleOrder = SampleRandomizedPositions.RIGHT
-                                else if (silverMineral1X != null)
+                                }
+                                else if (silverMineral1X != null) {
                                     lastKnownSampleOrder =
-                                            if (goldMineralX < silverMineral1X)
+                                            if (goldMineralX < silverMineral1X) {
                                                 SampleRandomizedPositions.LEFT
-                                            else
+                                            }
+                                            else {
                                                 SampleRandomizedPositions.CENTER
+                                            }
+                                    lastGoldPositionX = goldMineralX
+                                }
                             }
                         }
                     }
