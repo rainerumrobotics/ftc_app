@@ -33,9 +33,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.hardware.Arm;
+import org.firstinspires.ftc.teamcode.hardware.ArmLift;
 import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
 import org.firstinspires.ftc.teamcode.hardware.RobotDrive;
 import org.firstinspires.ftc.teamcode.hardware.VerticalLift;
@@ -106,10 +109,11 @@ public abstract class BaseOpMode extends OpMode {
 
         TouchSensor ArmEndStop = hardwareMap.get(TouchSensor.class, "arm_end_stop");
         arm = new Arm(
-                hardwareMap.get(TouchSensor.class, "arm_main_drive"),
-                hardwareMap.get(TouchSensor.class, "left_arm_slave"),
-                hardwareMap.get(TouchSensor.class, "right_arm_slave"),
+                hardwareMap.get(DcMotor.class, "arm_main_drive"),
                 hardwareMap.get(TouchSensor.class, "arm_end_stop"),
+                hardwareMap.get(Servo.class, "right_arm_slave"),
+                hardwareMap.get(Servo.class, "left_arm_slave"),
+                10
         );
 
         // Tell the driver that initialization is complete.

@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
+
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -71,17 +73,21 @@ public class TeleOpMode extends BaseOpMode {
         }
 
         if(gamepad1.left_trigger > 0.5) {
-            arm.muoviSlaveGiu();
+            arm.slave.muoviSlaveGiu();
         } else if (gamepad1.right_bumper){
-            arm.muoviSlaveSu();
+            arm.slave.muoviSlaveSu();
         }
 
+        GamepadStick leftStick = new GamepadStick(gamepad1, GamepadStick.Section.SIDE_LEFT);
+        arm.lift.muoviMotore(leftStick.getY());
+        /*
         if(gamepad1.y){
-            arm.muoviMotoreSu();
+            arm.lift.muoviMotoreSu();
         } else if(gamepad1.a) {
-            arm.muoviMotoreGiu();
+            arm.lift.muoviMotoreGiu();
         } else {
             arm.stop();
         }
+        */
     }
 }

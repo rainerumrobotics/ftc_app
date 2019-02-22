@@ -2,16 +2,16 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class ArmMotor {
+public class ArmLift {
     private final DcMotor _armMotor;
 
-    ArmLift(DcMotor motor) {
+    public ArmLift(DcMotor motor) {
         _armMotor = motor;
-        _armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         _armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public static final float K_MAX_POWER = 1.0f;
+    private static final float K_MAX_POWER = 0.4f;
     public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_40 = 2240;
     public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_20 = 1120;
 
@@ -21,5 +21,8 @@ public class ArmMotor {
     }
     public void muoviMotoreGiu(){
         _armMotor.setPower(-K_MAX_POWER);
+    }
+    public void muoviMotore(float power) {
+        _armMotor.setPower(power * K_MAX_POWER);
     }
 }
