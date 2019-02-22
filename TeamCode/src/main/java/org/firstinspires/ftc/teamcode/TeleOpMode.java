@@ -77,6 +77,7 @@ public class TeleOpMode extends BaseOpMode {
         } else if (gamepad1.right_bumper){
             arm.slave.muoviSlaveSu();
         }
+        arm.slave.updateServos(); // refresh servo position
 
         GamepadStick leftStick = new GamepadStick(gamepad1, GamepadStick.Section.SIDE_LEFT);
         arm.lift.muoviMotore(leftStick.getY());

@@ -169,6 +169,9 @@ public abstract class BaseOpMode extends OpMode {
         telemetry.addData("Lift", "ticks (%d) endStop=" + lift.isBottomEndStopHit(),
                 lift.testGetEncoderTicks()
         );
+        telemetry.addData("Arm", "s1 (%.2f), s2 (%.2f)",
+                arm.slave.testPosition1(), arm.slave.testPosition2()
+        );
     }
 
     /*
