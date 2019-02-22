@@ -30,8 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
 
@@ -49,21 +51,29 @@ import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="AutonomousMode", group="AutonomousModes")
+@Autonomous(name="CoffeleMode", group="AutonomousModes")
 //@Disabled
-public class AutonomousMode extends BaseOpMode {
+public class AutonomousMode extends OpMode {
+    protected ElapsedTime runtime = new ElapsedTime();
     DcMotor winchDrive;
+
     @Override
     public void init() {
         winchDrive = hardwareMap.get(DcMotor.class,"winch_drive");
+    }
+
+
+    @Override
+    public void start() {
+        runtime.reset();
         winchDrive.setPower(0.2f);
-        //TODO!!
+
     }
 
 
     @Override
     public void loop() {
-        super.loop();
+        if (runtime.milliseconds()==1057) winchDrive.setPower(0.0f);
 
 
 
