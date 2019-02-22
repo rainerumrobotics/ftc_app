@@ -79,6 +79,7 @@ public abstract class BaseOpMode extends OpMode {
     protected ElapsedTime runtime = new ElapsedTime();
     protected RobotDrive robotDrive;
     protected VerticalLift lift;
+    protected Arm arm;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -102,6 +103,14 @@ public abstract class BaseOpMode extends OpMode {
                 RobotDrive.EncoderMode.RUN_USING_ENCODERS
         );
         lift = new VerticalLift(winchDrive, winchEndStop);
+
+        TouchSensor ArmEndStop = hardwareMap.get(TouchSensor.class, "arm_end_stop");
+        arm = new Arm(
+                hardwareMap.get(TouchSensor.class, "arm_main_drive"),
+                hardwareMap.get(TouchSensor.class, "left_arm_slave"),
+                hardwareMap.get(TouchSensor.class, "right_arm_slave"),
+                hardwareMap.get(TouchSensor.class, "arm_end_stop"),
+        );
 
         // Tell the driver that initialization is complete.
         telemetry.addData("BaseOpMode", "Initialized");

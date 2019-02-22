@@ -70,8 +70,18 @@ public class TeleOpMode extends BaseOpMode {
             lift.stop();
         }
 
-        if(gamepad1.a) {
-            //lift.testAssembly();
+        if(gamepad1.left_trigger > 0.5) {
+            arm.muoviSlaveGiu();
+        } else if (gamepad1.right_bumper){
+            arm.muoviSlaveSu();
+        }
+
+        if(gamepad1.y){
+            arm.muoviMotoreSu();
+        } else if(gamepad1.a) {
+            arm.muoviMotoreGiu();
+        } else {
+            arm.stop();
         }
     }
 }
