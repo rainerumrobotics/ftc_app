@@ -48,7 +48,7 @@ import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOpMode", group="TeleOpModes")
+@TeleOp(name="NonnoArturoOpMode", group="TeleOpModes")
 //@Disabled
 public class TeleOpMode extends BaseOpMode {
     /*

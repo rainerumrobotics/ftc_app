@@ -20,8 +20,8 @@ public class ArmSlave {
     }
 
     public void muoviSlaveSu() {
-        rotazione1 += 0.1;
-        rotazione2 += 0.1;
+        rotazione1 = 0.9;
+        rotazione2 = 0.1;
         /*if(rotazione<1) {
             _armServo1.setPosition(rotazione += 0.1);
             _armServo2.setPosition(rotazione -= 0.1);
@@ -29,8 +29,8 @@ public class ArmSlave {
         }*/
     }
     public void muoviSlaveGiu() {
-        rotazione1 -= 0.1;
-        rotazione2 -= 0.1;
+        rotazione1 = 0.1;
+        rotazione2 = 0.9;
         /*if(rotazione>0) {
             _armServo1.setPosition(rotazione += 0.1);
             _armServo2.setPosition(rotazione -= 0.1);
