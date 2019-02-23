@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -12,7 +13,7 @@ public class Arm {
     private TouchSensor button;
     private int rotazione;
 
-    public Arm(DcMotor armMotor, TouchSensor bottomEndStop, Servo servo1, Servo servo2, int r) {
+    public Arm(DcMotor armMotor, TouchSensor bottomEndStop, CRServo servo1, CRServo servo2, int r) {
         lift = new ArmLift(armMotor);
         button = bottomEndStop;
         slave = new ArmSlave(servo1,servo2);

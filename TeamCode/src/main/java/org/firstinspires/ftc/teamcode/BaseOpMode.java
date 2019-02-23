@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -111,8 +112,8 @@ public abstract class BaseOpMode extends OpMode {
         arm = new Arm(
                 hardwareMap.get(DcMotor.class, "arm_main_drive"),
                 hardwareMap.get(TouchSensor.class, "arm_end_stop"),
-                hardwareMap.get(Servo.class, "right_arm_slave"),
-                hardwareMap.get(Servo.class, "left_arm_slave"),
+                hardwareMap.get(CRServo.class, "right_arm_slave"),
+                hardwareMap.get(CRServo.class, "left_arm_slave"),
                 10
         );
 

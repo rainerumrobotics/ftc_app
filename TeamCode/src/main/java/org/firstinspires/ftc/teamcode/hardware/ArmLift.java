@@ -11,7 +11,7 @@ public class ArmLift {
         _armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    private static final float K_MAX_POWER = 0.7f;
+    private static final float K_MAX_POWER = 0.9f;
     public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_40 = 2240;
     public static final int K_TICKS_PER_REVOLUTION_REV_HD_HEX_MOTOR_20 = 1120;
 

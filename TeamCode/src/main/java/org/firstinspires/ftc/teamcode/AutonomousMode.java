@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.hardware.RobotDrive;
 import org.firstinspires.ftc.teamcode.vision.GoldFinder;
 import org.firstinspires.ftc.teamcode.vision.SampleRandomizedPositions;
 
@@ -56,6 +57,7 @@ import org.firstinspires.ftc.teamcode.vision.SampleRandomizedPositions;
 //@Disabled
 public class AutonomousMode extends OpMode {
     protected ElapsedTime runtime = new ElapsedTime();
+    protected RobotDrive robotDrive;
     private DcMotor leftDrive;
     private DcMotor rightDrive;
     private DcMotor winchDrive;
@@ -70,16 +72,17 @@ public class AutonomousMode extends OpMode {
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         winchDrive = hardwareMap.get(DcMotor.class,"winch_drive");
-        goldFinder = new GoldFinder(hardwareMap);
-        goldFinder.start();
+        robotDrive = new RobotDrive(
+                leftDrive, rightDrive,
+                RobotDrive.DirectDrive.FONT_WHEEL_DRIVE,
+                RobotDrive.EncoderMode.RUN_USING_ENCODERS
+        );
+
     }
 
 
     @Override
     public void start() {
-        goldFinder.pause();
-        goldPosition = goldFinder.getLastGoldPosition();
-        telemetry.addData("goldPosition was", goldPosition);// giving feedback
         runtime.reset();
         winchDrive.setPower(0.2f);
         PHASE1 = true;
@@ -91,7 +94,7 @@ public class AutonomousMode extends OpMode {
         // divide this into steps
         // step 1: get down
         if (PHASE1) {
-            if (runtime.milliseconds() >= 7600) {
+            if (runtime.milliseconds() >= 9200) {
                 winchDrive.setPower(0.0f);
                 PHASE1 = false;
                 PHASE2 = true;
@@ -99,9 +102,8 @@ public class AutonomousMode extends OpMode {
         }
         // step 2: rotate
         else if (PHASE2) {
-            if (runtime.milliseconds() <= 8600) {
-                leftDrive.setPower(0.2f);
-                rightDrive.setPower(0.4f);
+            if (runtime.milliseconds() <= 11000) {
+                robotDrive.drive(-1, 60.0f);
             }
             else {
                 leftDrive.setPower(0.0f);

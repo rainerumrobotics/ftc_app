@@ -76,6 +76,8 @@ public class TeleOpMode extends BaseOpMode {
             arm.slave.muoviSlaveGiu();
         } else if (gamepad1.right_bumper){
             arm.slave.muoviSlaveSu();
+        } else {
+            arm.slave.stop();
         }
         arm.slave.updateServos(); // refresh servo position
 
