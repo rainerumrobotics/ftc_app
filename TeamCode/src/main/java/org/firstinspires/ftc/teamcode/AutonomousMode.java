@@ -30,12 +30,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
+import org.firstinspires.ftc.teamcode.vision.GoldFinder;
+import org.firstinspires.ftc.teamcode.vision.SampleRandomizedPositions;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -55,27 +56,57 @@ import org.firstinspires.ftc.teamcode.hardware.GamepadStick;
 //@Disabled
 public class AutonomousMode extends OpMode {
     protected ElapsedTime runtime = new ElapsedTime();
-    DcMotor winchDrive;
+    private DcMotor leftDrive;
+    private DcMotor rightDrive;
+    private DcMotor winchDrive;
+    private GoldFinder goldFinder;
+    private SampleRandomizedPositions goldPosition;
+    private Boolean PHASE1 = false;
+    private Boolean PHASE2 = false;
+    private Boolean PHASE3 = false;
 
     @Override
     public void init() {
+        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         winchDrive = hardwareMap.get(DcMotor.class,"winch_drive");
+        goldFinder = new GoldFinder(hardwareMap);
+        goldFinder.start();
     }
 
 
     @Override
     public void start() {
+        goldFinder.pause();
+        goldPosition = goldFinder.getLastGoldPosition();
+        telemetry.addData("goldPosition was", goldPosition);// giving feedback
         runtime.reset();
         winchDrive.setPower(0.2f);
-
+        PHASE1 = true;
     }
 
 
     @Override
     public void loop() {
-        if (runtime.milliseconds()==1057) winchDrive.setPower(0.0f);
-
-
-
+        // divide this into steps
+        // step 1: get down
+        if (PHASE1) {
+            if (runtime.milliseconds() >= 7600) {
+                winchDrive.setPower(0.0f);
+                PHASE1 = false;
+                PHASE2 = true;
+            }
+        }
+        // step 2: rotate
+        else if (PHASE2) {
+            if (runtime.milliseconds() <= 8600) {
+                leftDrive.setPower(0.2f);
+                rightDrive.setPower(0.4f);
+            }
+            else {
+                leftDrive.setPower(0.0f);
+                rightDrive.setPower(0.0f);
+            }
+        }
     }
 }
