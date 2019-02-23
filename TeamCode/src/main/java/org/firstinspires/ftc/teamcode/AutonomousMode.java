@@ -56,8 +56,8 @@ import org.firstinspires.ftc.teamcode.vision.SampleRandomizedPositions;
 @Autonomous(name="CoffeleMode", group="AutonomousModes")
 //@Disabled
 public class AutonomousMode extends OpMode {
-    protected ElapsedTime runtime = new ElapsedTime();
-    protected RobotDrive robotDrive;
+    private ElapsedTime runtime = new ElapsedTime();
+    private RobotDrive robotDrive;
     private DcMotor leftDrive;
     private DcMotor rightDrive;
     private DcMotor winchDrive;
@@ -66,6 +66,8 @@ public class AutonomousMode extends OpMode {
     private Boolean PHASE1 = false;
     private Boolean PHASE2 = false;
     private Boolean PHASE3 = false;
+    private int PHASE1DURATION = 9200;
+    private int PHASE2DURATION = PHASE1DURATION + 300;
 
     @Override
     public void init() {
@@ -77,7 +79,6 @@ public class AutonomousMode extends OpMode {
                 RobotDrive.DirectDrive.FONT_WHEEL_DRIVE,
                 RobotDrive.EncoderMode.RUN_USING_ENCODERS
         );
-
     }
 
 
@@ -94,7 +95,7 @@ public class AutonomousMode extends OpMode {
         // divide this into steps
         // step 1: get down
         if (PHASE1) {
-            if (runtime.milliseconds() >= 9200) {
+            if (runtime.milliseconds() >= PHASE1DURATION) {
                 winchDrive.setPower(0.0f);
                 PHASE1 = false;
                 PHASE2 = true;
@@ -102,12 +103,11 @@ public class AutonomousMode extends OpMode {
         }
         // step 2: rotate
         else if (PHASE2) {
-            if (runtime.milliseconds() <= 11000) {
-                robotDrive.drive(-1, 60.0f);
+            if (runtime.milliseconds() <= PHASE2DURATION) {
+                robotDrive.setLeftRightMotorOutputs(-0.3f, 0.2f);
             }
             else {
-                leftDrive.setPower(0.0f);
-                rightDrive.setPower(0.0f);
+                robotDrive.setLeftRightMotorOutputs(0.0f, 0.0f);
             }
         }
     }
